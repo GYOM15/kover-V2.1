@@ -148,12 +148,15 @@ void report_error_line_wrong_arguments_number(const char* object,
 void report_error_scene_last_line(void);
 
 /**
- * Reports on stderr that two buildings are overlapping
+ * Reports on stderr that two structures are overlapping
  *
- * @param id1  The identifier of the first building
- * @param id2  The identifier of the second building
+ * @param type1  The type of the first structure ("building" or "house")
+ * @param id1    The identifier of the first structure
+ * @param type2  The type of the second structure ("building" or "house")
+ * @param id2    The identifier of the second structure
  */
-void report_error_overlapping_buildings(const char* id1, const char* id2);
+void report_error_overlapping_structures(const char* type1, const char* id1, 
+                                        const char* type2, const char* id2);
 
 /**
  * Reports on stderr that two antennas have the same position
