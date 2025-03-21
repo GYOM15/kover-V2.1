@@ -126,6 +126,11 @@ void report_error_scene_last_line(void) {
   report_error("last line must be exactly 'end scene'\n");
 }
 
+void report_error_overlapping_structures(const char* type1, const char* id1, 
+                                        const char* type2, const char* id2) {
+  report_error("%s %s and %s %s are overlapping\n", type1, id1, type2, id2);
+}
+
 void report_error_same_position_antennas(const char* id1, const char* id2) {
   report_error("antennas %s and %s have the same position\n", id1, id2);
 }
