@@ -7,8 +7,36 @@
 #include <string.h>
 #include <stdarg.h>
 
-// Validation
-// ----------
+// Validation functions
+// --------------------
+
+void init_validation_error(struct ValidationError* error) {
+  error->has_error = false;
+  error->message[0] = '\0';
+}
+
+bool is_scene_valid(const struct Scene* scene, struct ValidationError* error) {
+  init_validation_error(error);
+  
+  // Check for structure overlaps
+  if (validate_structures_overlaps(scene, error)) {
+    return false;
+  }
+  
+  // Check for antenna issues
+  if (validate_antennas(scene, error)) {
+    return false;
+  }
+  
+  return true;
+}
+
+const char* get_validation_error(const struct ValidationError* error) {
+  if (error->has_error) {
+    return error->message;
+  }
+  return "unknown error";
+}
 
 bool is_valid_id(const char* s) {
   if (*s == '\0' || (!isalpha(*s) && *s != '_'))
@@ -49,39 +77,9 @@ bool is_valid_positive_integer(const char* s) {
   return true;
 }
 
-void init_validation_error(struct ValidationError* error) {
-  error->has_error = false;
-  error->message[0] = '\0';
-}
+// Error reporting functions
+// -------------------------
 
-bool is_scene_valid(const struct Scene* scene, struct ValidationError* error) {
-  init_validation_error(error);
-  
-  // Check for structure overlaps
-  if (validate_structures_overlaps(scene, error)) {
-      return false;
-  }
-  
-  // Check for antenna issues
-  if (validate_antennas(scene, error)) {
-      return false;
-  }
-  
-  return true;
-}
-
-const char* get_validation_error(const struct ValidationError* error) {
-  if (error->has_error) {
-    return error->message;
-  }
-  return "unknown error";
-}
-
-// Error reporting
-// ---------------
-/**
- * Report an error and exit with error code
- */
 void report_error(const char* format, ...) {
   printf("not ok\n");
   
@@ -126,10 +124,6 @@ void report_error_line_wrong_arguments_number(const char* object,
 
 void report_error_scene_last_line(void) {
   report_error("last line must be exactly 'end scene'\n");
-}
-
-void report_error_overlapping_buildings(const char* id1, const char* id2) {
-  report_error("buildings %s and %s are overlapping\n", id1, id2);
 }
 
 void report_error_same_position_antennas(const char* id1, const char* id2) {
