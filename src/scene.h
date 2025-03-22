@@ -237,4 +237,21 @@ unsigned int get_num_buildings(const struct Scene* scene);
  */
 unsigned int get_num_houses(const struct Scene* scene);
 
+// Coverage quality
+// ---------------------------------------------------
+
+/**
+ * Checks if a point is covered by any antenna in the scene.
+ * 
+ * @param x      The x-coordinate of the point
+ * @param y      The y-coordinate of the point
+ * @param scene  The scene containing the antennas
+ * @return       true if the point is covered by at least one antenna
+ */
+bool is_point_covered(int x, int y, const struct Scene* scene);
+
+
+
+
+
 #endif
