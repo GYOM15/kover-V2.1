@@ -197,4 +197,29 @@ void add_antenna(struct Scene* scene, const struct Antenna* antenna);
 // Helper functions
 // ---------------
 
+/**
+ * Creates a building structure
+ *
+ * @param id  The identifier of the building
+ * @param x   The x coordinate
+ * @param y   The y coordinate
+ * @param w   The half width
+ * @param h   The half height
+ * @return    A new building structure
+ */
+struct Structure create_building(const char* id, int x, int y, int w, int h);
+
+/**
+ * Creates a house structure
+ *
+ * @param id  The identifier of the house
+ * @param x   The x coordinate
+ * @param y   The y coordinate
+ * @param w   The half width
+ * @param h   The half height
+ * @return    A new house structure
+ */
+struct Structure create_house(const char* id, int x, int y, int w, int h);
+
+
 #endif
