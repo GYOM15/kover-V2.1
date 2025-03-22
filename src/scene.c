@@ -221,6 +221,20 @@ bool load_antenna_from_parsed_line(const struct ParsedLine* parsed_line,
 // Helper functions
 // ---------------
 
+struct Structure create_building(const char* id, int x, int y, int w, int h) {
+  struct Structure building;
+  strncpy(building.id, id, MAX_LENGTH_ID);
+  building.type = BUILDING;
+  building.x = x;
+  building.y = y;
+  building.w = w;
+  building.h = h;
+  return building;
+}
+
+
+
+
 // Construction
 // ------------
 
