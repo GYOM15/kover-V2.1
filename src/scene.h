@@ -250,7 +250,14 @@ unsigned int get_num_houses(const struct Scene* scene);
  */
 bool is_point_covered(int x, int y, const struct Scene* scene);
 
-
+/**
+ * Counts the number of corners of a structure that are covered by antennas
+ * 
+ * @param structure  The structure to check coverage for
+ * @param scene      The scene containing the antennas
+ * @return           The number of corners covered (0-4)
+ */
+int count_structure_covered_corners(const struct Structure* structure, const struct Scene* scene);
 
 
 
