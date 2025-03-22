@@ -572,3 +572,24 @@ bool is_point_covered(int x, int y, const struct Scene* scene) {
   return false;
 }
 
+/**
+ * Gets a letter grade based on the number of covered corners.
+ * The grade ranges from 'A' (excellent coverage) to 'E' (no coverage):
+ * - A: All 4 corners covered
+ * - B: 3 corners covered
+ * - C: 2 corners covered
+ * - D: 1 corner covered
+ * - E: No corners covered
+ *
+ * @param covered_corners  The number of corners that are covered (0-4)
+ * @return                 A grade from 'A' (best) to 'E' (worst)
+ */
+char get_coverage_quality(int covered_corners) {
+  switch (covered_corners) {
+    case 4: return 'A';
+    case 3: return 'B';
+    case 2: return 'C';
+    case 1: return 'D';
+    default: return 'E';
+  }
+}
