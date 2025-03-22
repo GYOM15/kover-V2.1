@@ -461,6 +461,28 @@ void print_scene_bounding_box(const struct Scene* scene) {
 // Modifiers
 // ---------
 
+void add_structure(struct Scene* scene, const struct Structure* structure) {
+  unsigned int s = 0;
+  while (s < scene->num_structures &&
+         strcmp(structure->id, scene->structures[s].id) > 0)
+    ++s;
+  if (s < scene->num_structures &&
+      strcmp(structure->id, scene->structures[s].id) == 0) {
+    const char* type_str = structure->type == BUILDING ? "building" : "house";
+    report_error_non_unique_identifiers(type_str, structure->id);
+  }
+  for (unsigned int s2 = scene->num_structures; s2 > s; --s2)
+    scene->structures[s2] = scene->structures[s2 - 1];
+  struct Structure* scene_structure = scene->structures + s;
+  strncpy(scene_structure->id, structure->id, MAX_LENGTH_ID);
+  scene_structure->type = structure->type;
+  scene_structure->x = structure->x;
+  scene_structure->y = structure->y;
+  scene_structure->w = structure->w;
+  scene_structure->h = structure->h;
+  ++scene->num_structures;
+}
+
 void add_antenna(struct Scene* scene, const struct Antenna* antenna) {
   unsigned int a = 0;
   while (a < scene->num_antennas &&
