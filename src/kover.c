@@ -19,6 +19,7 @@ SUBCOMMAND is mandatory and must take one of the following values:\n\
   bounding-box: returns a bounding box of the loaded scene\n\
   describe: describes the loaded scene in details\n\
   help: shows this message\n\
+  quality: evaluates the coverage quality of buildings and houses\n\
   summarize: summarizes the loaded scene\n\
   validate: validates the scene and reports if it's valid\n\
 \n\
@@ -44,7 +45,7 @@ A scene is a text stream that must satisfy the following syntax:\n\
        H is the half-height of the house\n\
   6. An antenna line has the form 'antenna ID X Y R' (with any number of\n\
      blank characters before or after), where\n\
-       ID is the antenna identifier\n\
+       ID is the building identifier\n\
        X is the x-coordinate of the antenna\n\
        Y is the y-coordinate of the antenna\n\
        R is the radius scope of the antenna\n"

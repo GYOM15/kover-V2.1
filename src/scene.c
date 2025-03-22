@@ -500,3 +500,26 @@ void add_antenna(struct Scene* scene, const struct Antenna* antenna) {
   scene_antenna->r = antenna->r;
   ++scene->num_antennas;
 }
+
+// Coverage quality functions
+// -------------------------
+
+/**
+ * Calculates the squared distance between two points.
+ * This avoids using square root for efficiency when comparing distances.
+ *
+ * @param x1  x-coordinate of the first point
+ * @param y1  y-coordinate of the first point
+ * @param x2  x-coordinate of the second point
+ * @param y2  y-coordinate of the second point
+ * @return    The squared distance between the points
+ */
+static int distance_squared(int x1, int y1, int x2, int y2) {
+  int dx = x1 - x2;
+  int dy = y1 - y2;
+  
+  return dx * dx + dy * dy;
+}
+
+
+
