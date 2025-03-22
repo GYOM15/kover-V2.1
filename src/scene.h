@@ -179,6 +179,14 @@ void print_scene_bounding_box(const struct Scene* scene);
 // ---------
 
 /**
+ * Adds a structure to a scene
+ *
+ * @param scene      The scene to which the structure is added
+ * @param structure  The structure to add
+ */
+void add_structure(struct Scene* scene, const struct Structure* structure);
+
+/**
  * Adds an antenna to a scene
  *
  * @param scene    The scene to which the antenna is added
