@@ -259,6 +259,12 @@ bool is_point_covered(int x, int y, const struct Scene* scene);
  */
 int count_structure_covered_corners(const struct Structure* structure, const struct Scene* scene);
 
-
+/**
+ * Gets a letter grade based on the number of covered corners
+ * 
+ * @param covered_corners  The number of corners that are covered (0-4)
+ * @return                 A grade from 'A' (all corners covered) to 'E' (no coverage)
+ */
+char get_coverage_quality(int covered_corners);
 
 #endif
