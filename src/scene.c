@@ -317,6 +317,59 @@ void validate_scene(const struct Scene* scene) {
   }
 }
 
+bool are_structures_overlapping(const struct Structure* structure1,
+                               const struct Structure* structure2) {
+  return are_intervals_overlapping(structure1->x - structure1->w,
+                                   structure1->x + structure1->w,
+                                   structure2->x - structure2->w,
+                                   structure2->x + structure2->w) &&
+         are_intervals_overlapping(structure1->y - structure1->h,
+                                   structure1->y + structure1->h,
+                                   structure2->y - structure2->h,
+                                   structure2->y + structure2->h);
+}
+
+bool have_antennas_same_position(const struct Antenna* antenna1,
+                                const struct Antenna* antenna2) {
+  return antenna1->x == antenna2->x && antenna1->y == antenna2->y;
+}
+
+bool validate_structures_overlaps(const struct Scene* scene, struct ValidationError* error) {
+  for (unsigned int s1 = 0; s1 < scene->num_structures; ++s1) {
+    for (unsigned int s2 = s1 + 1; s2 < scene->num_structures; ++s2) {
+      const struct Structure* structure1 = scene->structures + s1;
+      const struct Structure* structure2 = scene->structures + s2;
+      if (are_structures_overlapping(structure1, structure2)) {
+        // Format the error message based on structure types
+        const char* type1 = structure1->type == BUILDING ? "buildings" : "house";
+        snprintf(error->message, sizeof(error->message), 
+                "%s %s and %s are overlapping", 
+                type1, structure1->id, structure2->id);
+        error->has_error = true;
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+bool validate_antennas(const struct Scene* scene, struct ValidationError* error) {
+  for (unsigned int a1 = 0; a1 < scene->num_antennas; ++a1) {
+    for (unsigned int a2 = a1 + 1; a2 < scene->num_antennas; ++a2) {
+      const struct Antenna* antenna1 = scene->antennas + a1;
+      const struct Antenna* antenna2 = scene->antennas + a2;
+      if (have_antennas_same_position(antenna1, antenna2)) {
+        snprintf(error->message, sizeof(error->message), 
+                "antennas %s and %s have the same position", 
+                antenna1->id, antenna2->id);
+        error->has_error = true;
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 // Accessors
 // ---------
 
