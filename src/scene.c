@@ -232,6 +232,17 @@ struct Structure create_building(const char* id, int x, int y, int w, int h) {
   return building;
 }
 
+struct Structure create_house(const char* id, int x, int y, int w, int h) {
+  struct Structure house;
+  strncpy(house.id, id, MAX_LENGTH_ID);
+  house.type = HOUSE;
+  house.x = x;
+  house.y = y;
+  house.w = w;
+  house.h = h;
+  return house;
+}
+
 
 
 
