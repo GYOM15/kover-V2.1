@@ -221,5 +221,20 @@ struct Structure create_building(const char* id, int x, int y, int w, int h);
  */
 struct Structure create_house(const char* id, int x, int y, int w, int h);
 
+/**
+ * Gets the number of buildings in the scene
+ *
+ * @param scene  The scene
+ * @return       The number of buildings
+ */
+unsigned int get_num_buildings(const struct Scene* scene);
+
+/**
+ * Gets the number of houses in the scene
+ *
+ * @param scene  The scene
+ * @return       The number of houses
+ */
+unsigned int get_num_houses(const struct Scene* scene);
 
 #endif
