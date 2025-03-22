@@ -49,174 +49,6 @@ bool are_intervals_overlapping(int a1, int b1, int a2, int b2) {
          (a2 <= a1 && a1 < b2 && b2 <= b1);
 }
 
-/**
- * Indicates if two buildings are overlapping
- *
- * Two building are overlapping if their intersection has a strictly positive
- * area.
- *
- * @param building1  The first building
- * @param building2  The second building
- */
-bool are_building_overlapping(const struct Building* building1,
-                              const struct Building* building2) {
-  return are_intervals_overlapping(building1->x - building1->w,
-                                   building1->x + building1->w,
-                                   building2->x - building2->w,
-                                   building2->x + building2->w) &&
-         are_intervals_overlapping(building1->y - building1->h,
-                                   building1->y + building1->h,
-                                   building2->y - building2->h,
-                                   building2->y + building2->h);
-}
-
-/**
- * Indicates if two antennas have the same position
- *
- * @param antenna1  The first antenna
- * @param antenna2  The second antenna
- */
-bool have_antennas_same_position(const struct Antenna* antenna1,
-                                 const struct Antenna* antenna2) {
-  return antenna1->x == antenna2->x && antenna1->y == antenna2->y;
-}
-
-/**
- * Vérifie si un bâtiment et une maison se chevauchent
- */
-bool are_building_house_overlapping(const struct Building *building,
-                                    const struct House *house)
-{
-  return are_intervals_overlapping(building->x - building->w,
-                                   building->x + building->w,
-                                   house->x - house->w,
-                                   house->x + house->w) &&
-         are_intervals_overlapping(building->y - building->h,
-                                   building->y + building->h,
-                                   house->y - house->h,
-                                   house->y + house->h);
-}
-
-/**
- * Vérifie si deux maisons se chevauchent
- */
-bool are_houses_overlapping(const struct House *house1,
-                            const struct House *house2)
-{
-  return are_intervals_overlapping(house1->x - house1->w,
-                                   house1->x + house1->w,
-                                   house2->x - house2->w,
-                                   house2->x + house2->w) &&
-         are_intervals_overlapping(house1->y - house1->h,
-                                   house1->y + house1->h,
-                                   house2->y - house2->h,
-                                   house2->y + house2->h);
-}
-
-/**
- * Checks if there are overlapping buildings in the scene
- *
- * @param scene  The scene to validate
- * @return       true if an overlap is found, false otherwise
- */
-bool validate_buildings(const struct Scene* scene, struct ValidationError* error) {
-  for (unsigned int b1 = 0; b1 < scene->num_buildings; ++b1) {
-    for (unsigned int b2 = b1 + 1; b2 < scene->num_buildings; ++b2) {
-      const struct Building* building1 = scene->buildings + b1;
-      const struct Building* building2 = scene->buildings + b2;
-      if (are_building_overlapping(building1, building2)) {
-        snprintf(error->message, sizeof(error->message), 
-                "buildings %s and %s are overlapping", 
-                building1->id, building2->id);
-        error->has_error = true;
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
-/**
- * Checks if there are overlapping houses in the scene
- *
- * @param scene  The scene to validate
- * @return       true if an overlap is found, false otherwise
- */
-bool validate_houses(const struct Scene* scene, struct ValidationError* error) {
-  for (unsigned int h1 = 0; h1 < scene->num_houses; ++h1) {
-    for (unsigned int h2 = h1 + 1; h2 < scene->num_houses; ++h2) {
-      const struct House* house1 = scene->houses + h1;
-      const struct House* house2 = scene->houses + h2;
-      if (are_houses_overlapping(house1, house2)) {
-        snprintf(error->message, sizeof(error->message), 
-                "houses %s and %s are overlapping", 
-                house1->id, house2->id);
-        error->has_error = true;
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
-/**
- * Checks if there are overlapping buildings and houses in the scene
- *
- * @param scene  The scene to validate
- * @return       true if an overlap is found, false otherwise
- */
-bool validate_buildings_houses_overlap(const struct Scene* scene, struct ValidationError* error) {
-  for (unsigned int b = 0; b < scene->num_buildings; ++b) {
-    for (unsigned int h = 0; h < scene->num_houses; ++h) {
-      const struct Building* building = scene->buildings + b;
-      const struct House* house = scene->houses + h;
-      if (are_building_house_overlapping(building, house)) {
-        snprintf(error->message, sizeof(error->message), 
-                "buildings %s and %s are overlapping", 
-                building->id, house->id);
-        error->has_error = true;
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
-/**
- * Checks for any overlapping structures in the scene
- *
- * @param scene  The scene to validate
- * @return       true if an overlap is found, false otherwise
- */
-bool validate_structures_overlaps(const struct Scene* scene, struct ValidationError* error) {
-  return validate_buildings(scene, error) ||
-         validate_houses(scene, error) ||
-         validate_buildings_houses_overlap(scene, error);
-}
-
-/**
- * Checks if the antennas of a scene are valid.
- *
- * @param scene  The scene to validate
- */
-bool validate_antennas(const struct Scene* scene, struct ValidationError* error) {
-  for (unsigned int a1 = 0; a1 < scene->num_antennas; ++a1) {
-    for (unsigned int a2 = a1 + 1; a2 < scene->num_antennas; ++a2) {
-      const struct Antenna* antenna1 = scene->antennas + a1;
-      const struct Antenna* antenna2 = scene->antennas + a2;
-      
-      if (have_antennas_same_position(antenna1, antenna2)) {
-        snprintf(error->message, sizeof(error->message), 
-                "antennas %s and %s have the same position", 
-                antenna1->id, antenna2->id);
-        error->has_error = true;
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
 // Loading
 // -------
 
@@ -292,13 +124,16 @@ bool load_building_from_parsed_line(const struct ParsedLine* parsed_line,
   if (!is_valid_positive_integer(parsed_line->tokens[5]))
       report_error_invalid_positive_int(parsed_line->tokens[5],
                                         parsed_line->line_number);
-  struct Building building;
-  strncpy(building.id, parsed_line->tokens[1], MAX_LENGTH_ID);
-  building.x = atoi(parsed_line->tokens[2]);
-  building.y = atoi(parsed_line->tokens[3]);
-  building.w = atoi(parsed_line->tokens[4]);
-  building.h = atoi(parsed_line->tokens[5]);
-  add_building(scene, &building);
+  
+  struct Structure building = create_building(
+    parsed_line->tokens[1],
+    atoi(parsed_line->tokens[2]),
+    atoi(parsed_line->tokens[3]),
+    atoi(parsed_line->tokens[4]),
+    atoi(parsed_line->tokens[5])
+  );
+  
+  add_structure(scene, &building);
   return true;
 }
 
@@ -332,13 +167,16 @@ bool load_house_from_parsed_line(const struct ParsedLine *parsed_line,
   if (!is_valid_positive_integer(parsed_line->tokens[5]))
     report_error_invalid_positive_int(parsed_line->tokens[5],
                                       parsed_line->line_number);
-  struct House house;
-  strncpy(house.id, parsed_line->tokens[1], MAX_LENGTH_ID);
-  house.x = atoi(parsed_line->tokens[2]);
-  house.y = atoi(parsed_line->tokens[3]);
-  house.w = atoi(parsed_line->tokens[4]);
-  house.h = atoi(parsed_line->tokens[5]);
-  add_house(scene, &house);
+  
+  struct Structure house = create_house(
+    parsed_line->tokens[1],
+    atoi(parsed_line->tokens[2]),
+    atoi(parsed_line->tokens[3]),
+    atoi(parsed_line->tokens[4]),
+    atoi(parsed_line->tokens[5])
+  );
+  
+  add_structure(scene, &house);
   return true;
 }
 
@@ -380,12 +218,14 @@ bool load_antenna_from_parsed_line(const struct ParsedLine* parsed_line,
 // Public functions definition
 // ===========================
 
+// Helper functions
+// ---------------
+
 // Construction
 // ------------
 
 void initialize_empty_scene(struct Scene* scene) {
-  scene->num_buildings = 0;
-  scene->num_houses = 0;
+  scene->num_structures = 0;
   scene->num_antennas = 0;
 }
 
@@ -439,9 +279,7 @@ void validate_scene(const struct Scene* scene) {
 // ---------
 
 bool scene_is_empty(const struct Scene* scene) {
-  return scene->num_buildings == 0 && 
-         scene->num_houses == 0 && 
-         scene->num_antennas == 0;
+  return scene->num_structures == 0 && scene->num_antennas == 0;
 }
 
 void print_scene_summary(const struct Scene* scene) {
@@ -449,44 +287,39 @@ void print_scene_summary(const struct Scene* scene) {
     puts("An empty scene");
     return;
   } 
+  unsigned int num_buildings = get_num_buildings(scene);
+  unsigned int num_houses = get_num_houses(scene);
   printf("A scene with ");
   bool first = true;
-  if (scene->num_buildings > 0) {
-    printf("%d building%s", scene->num_buildings, scene->num_buildings > 1 ? "s" : "");
+  if (num_buildings > 0) {
+    printf("%d building%s", num_buildings, num_buildings > 1 ? "s" : "");
     first = false;
   }
-  if (scene->num_houses > 0) {
+  if (num_houses > 0) {
     if (!first) {
       if (scene->num_antennas == 0)
         printf(" and ");
       else
         printf(", ");
     }
-    printf("%d house%s", scene->num_houses, scene->num_houses > 1 ? "s" : "");
+    printf("%d house%s", num_houses, num_houses > 1 ? "s" : "");
     first = false;
   }
   if (scene->num_antennas > 0) {
     if (!first)
       printf(" and ");
-    
     printf("%d antenna%s", scene->num_antennas, scene->num_antennas > 1 ? "s" : "");
   }
   printf("\n");
 }
 
-void print_scene_buildings(const struct Scene* scene) {
-  for (unsigned int b = 0; b < scene->num_buildings; ++b) {
-    const struct Building* building = scene->buildings + b;
-    printf("  building %s at %d %d with dimensions %d %d\n",
-           building->id, building->x, building->y, building->w, building->h);
-  }
-}
-
-void print_scene_houses(const struct Scene* scene) {
-  for (unsigned int h = 0; h < scene->num_houses; ++h) {
-    const struct House* house = scene->houses + h;
-    printf("  house %s at %d %d with dimensions %d %d\n",
-           house->id, house->x, house->y, house->w, house->h);
+void print_scene_structures(const struct Scene* scene) {
+  for (unsigned int s = 0; s < scene->num_structures; ++s) {
+    const struct Structure* structure = scene->structures + s;
+    const char* type_str = structure->type == BUILDING ? "building" : "house";
+    printf("  %s %s at %d %d with dimensions %d %d\n",
+           type_str, structure->id, structure->x, structure->y, 
+           structure->w, structure->h);
   }
 }
 
@@ -505,26 +338,17 @@ void print_scene_bounding_box(const struct Scene* scene) {
   }
   int xmin = INT_MAX, xmax = INT_MIN,
       ymin = INT_MAX, ymax = INT_MIN;
-  for (unsigned int b = 0; b < scene->num_buildings; ++b) {
-    int x = scene->buildings[b].x,
-        y = scene->buildings[b].y,
-        w = scene->buildings[b].w,
-        h = scene->buildings[b].h;
+      
+  // Check structures (buildings and houses)
+  for (unsigned int s = 0; s < scene->num_structures; ++s) {
+    int x = scene->structures[s].x,
+        y = scene->structures[s].y,
+        w = scene->structures[s].w,
+        h = scene->structures[s].h;
     xmin = x - w < xmin ? x - w : xmin;
     xmax = x + w > xmax ? x + w : xmax;
     ymin = y - h < ymin ? y - h : ymin;
     ymax = y + h > ymax ? y + h : ymax;
-  }
-  // Check houses
-  for (unsigned int h = 0; h < scene->num_houses; ++h) {
-    int x = scene->houses[h].x,
-        y = scene->houses[h].y,
-        w = scene->houses[h].w,
-        h_val = scene->houses[h].h;
-    xmin = x - w < xmin ? x - w : xmin;
-    xmax = x + w > xmax ? x + w : xmax;
-    ymin = y - h_val < ymin ? y - h_val : ymin;
-    ymax = y + h_val > ymax ? y + h_val : ymax;
   }
   // Check antennas
   for (unsigned int a = 0; a < scene->num_antennas; ++a) {
@@ -541,44 +365,6 @@ void print_scene_bounding_box(const struct Scene* scene) {
 
 // Modifiers
 // ---------
-
-void add_building(struct Scene* scene, const struct Building* building) {
-  unsigned int b = 0;
-  while (b < scene->num_buildings &&
-         strcmp(building->id, scene->buildings[b].id) > 0)
-    ++b;
-  if (b < scene->num_buildings &&
-      strcmp(building->id, scene->buildings[b].id) == 0)
-    report_error_non_unique_identifiers("building", building->id);
-  for (unsigned int b2 = scene->num_buildings; b2 > b; --b2)
-    scene->buildings[b2] = scene->buildings[b2 - 1];
-  struct Building* scene_building = scene->buildings + b;
-  strncpy(scene_building->id, building->id, MAX_LENGTH_ID);
-  scene_building->x = building->x;
-  scene_building->y = building->y;
-  scene_building->w = building->w;
-  scene_building->h = building->h;
-  ++scene->num_buildings;
-}
-
-void add_house(struct Scene* scene, const struct House* house) {
-  unsigned int h = 0;
-  while (h < scene->num_houses &&
-         strcmp(house->id, scene->houses[h].id) > 0)
-    ++h;
-  if (h < scene->num_houses &&
-      strcmp(house->id, scene->houses[h].id) == 0)
-    report_error_non_unique_identifiers("house", house->id);
-  for (unsigned int h2 = scene->num_houses; h2 > h; --h2)
-    scene->houses[h2] = scene->houses[h2 - 1];
-  struct House* scene_house = scene->houses + h;
-  strncpy(scene_house->id, house->id, MAX_LENGTH_ID);
-  scene_house->x = house->x;
-  scene_house->y = house->y;
-  scene_house->w = house->w;
-  scene_house->h = house->h;
-  ++scene->num_houses;
-}
 
 void add_antenna(struct Scene* scene, const struct Antenna* antenna) {
   unsigned int a = 0;
