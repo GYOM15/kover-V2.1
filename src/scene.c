@@ -505,6 +505,35 @@ void add_antenna(struct Scene* scene, const struct Antenna* antenna) {
 // -------------------------
 
 /**
+ * Counts the number of corners of a structure that are covered by antennas.
+ * Evaluates all four corners of the structure and returns the count of 
+ * corners that are within range of at least one antenna.
+ *
+ * @param structure  The structure whose corners are checked
+ * @param scene      The scene containing the antennas
+ * @return           The number of corners covered (0-4)
+ */
+int count_structure_covered_corners(const struct Structure* structure, const struct Scene* scene) {
+  int count = 0;
+  int x = structure->x;
+  int y = structure->y;
+  int w = structure->w;
+  int h = structure->h;
+
+  int x_min = x - w;
+  int x_max = x + w;
+  int y_min = y - h;
+  int y_max = y + h;
+  
+  if (is_point_covered(x_min, y_min, scene)) count++;
+  if (is_point_covered(x_min, y_max, scene)) count++;
+  if (is_point_covered(x_max, y_min, scene)) count++;
+  if (is_point_covered(x_max, y_max, scene)) count++;
+  
+  return count;
+}
+
+/**
  * Calculates the squared distance between two points.
  * This avoids using square root for efficiency when comparing distances.
  *
