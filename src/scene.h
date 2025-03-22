@@ -114,6 +114,19 @@ bool validate_structures_overlaps(const struct Scene* scene, struct ValidationEr
 bool validate_antennas(const struct Scene* scene, struct ValidationError* error);
 
 /**
+ * Indicates if two structures are overlapping
+ *
+ * Two structures are overlapping if their intersection has a strictly positive
+ * area.
+ *
+ * @param structure1  The first structure
+ * @param structure2  The second structure
+ * @return           true if and only if they overlap
+ */
+bool are_structures_overlapping(const struct Structure* structure1,
+                               const struct Structure* structure2);
+
+/**
 * Indicates if two antennas have the same position
 *
 * @param antenna1  The first antenna
