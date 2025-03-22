@@ -155,6 +155,13 @@ bool scene_is_empty(const struct Scene* scene);
 void print_scene_summary(const struct Scene* scene);
 
 /**
+ * Prints the structures of the scene to stdout
+ *
+ * @param scene  The scene whose structures are printed
+ */
+void print_scene_structures(const struct Scene* scene);
+
+/**
  * Prints the antenna of the scene to stdout
  *
  * @param scene  The scene whose antennas are printed
