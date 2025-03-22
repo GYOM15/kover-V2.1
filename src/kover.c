@@ -151,6 +151,8 @@ int main(int argc, char* argv[]) {
     run_summarize_subcommand();
   else if (strcmp(subcommand, "validate") == 0)
     run_validate_subcommand();
+  else if (strcmp(subcommand, "quality") == 0)
+    run_quality_subcommand();
   else
     report_error_unrecognized_subcommand(subcommand);
   return 0;
