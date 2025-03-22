@@ -253,6 +253,15 @@ unsigned int get_num_buildings(const struct Scene* scene) {
   return count;
 }
 
+unsigned int get_num_houses(const struct Scene* scene) {
+  unsigned int count = 0;
+  for (unsigned int i = 0; i < scene->num_structures; ++i) {
+    if (scene->structures[i].type == HOUSE) {
+      count++;
+    }
+  }
+  return count;
+}
 
 // Construction
 // ------------
