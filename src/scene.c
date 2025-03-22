@@ -243,7 +243,15 @@ struct Structure create_house(const char* id, int x, int y, int w, int h) {
   return house;
 }
 
-
+unsigned int get_num_buildings(const struct Scene* scene) {
+  unsigned int count = 0;
+  for (unsigned int i = 0; i < scene->num_structures; ++i) {
+    if (scene->structures[i].type == BUILDING) {
+      count++;
+    }
+  }
+  return count;
+}
 
 
 // Construction
