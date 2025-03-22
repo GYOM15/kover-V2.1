@@ -111,6 +111,23 @@ void run_validate_subcommand(void) {
   }
 }
 
+/**
+ * Runs the quality subcommand
+ */
+void run_quality_subcommand(void) {
+  struct Scene scene;
+  load_scene_from_stdin(&scene);
+  validate_scene(&scene);
+  
+  for (unsigned int s = 0; s < scene.num_structures; ++s) {
+    const struct Structure* structure = &scene.structures[s];
+    int corners = count_structure_covered_corners(structure, &scene);
+    char quality = get_coverage_quality(corners);
+    const char* type = structure->type == BUILDING ? "building" : "house";
+    printf("%s %s: %c\n", type, structure->id, quality);
+  }
+}
+
 // Main function
 // -------------
 
