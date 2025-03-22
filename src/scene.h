@@ -11,39 +11,32 @@
 #define MAX_LENGTH_ID 10
 // The maximum number of buildings in a scene
 #define NUM_MAX_BUILDINGS 100
-// The maximum number of antennas in a scene
-#define NUM_MAX_ANTENNAS 100
 // The maximum number of houses in a scene
 #define NUM_MAX_HOUSES 100
+// The maximum number of antennas in a scene
+#define NUM_MAX_ANTENNAS 100
 
 // Types
 // -----
 
-// A building
-struct Building {
-  // The identifier of the building
-  char id[MAX_LENGTH_ID + 1];
-  // The x coordinate of the building
-  int x;
-  // The y coordinate of the building
-  int y;
-  // The half width of the building (half length in x direction)
-  int w;
-  // The half height of the building (half length in y direction)
-  int h;
+// Structure type enum
+enum StructureType {
+  BUILDING,
+  HOUSE
 };
 
-// A house (similar to a building)
-struct House {
-  // The identifier of the house
+// A unified structure for buildings and houses
+struct Structure {
+  // The identifier of the structure
   char id[MAX_LENGTH_ID + 1];
-  // The x coordinate of the house
+  // Type of structure (building or house)
+  enum StructureType type;
+  // Coordinates
   int x;
-  // The y coordinate of the house
   int y;
-  // The half width of the house (half length in x direction)
+  // The half width (half length in x direction)
   int w;
-  // The half height of the house (half length in y direction)
+  // The half height (half length in y direction)
   int h;
 };
 
@@ -61,14 +54,11 @@ struct Antenna {
 
 // A scene
 struct Scene {
-  // The number of building in the scene
-  unsigned int num_buildings;
-  // The buildings of the scene
-  struct Building buildings[NUM_MAX_BUILDINGS];
-  // The number of houses in the scene
-  unsigned int num_houses;
-  // The houses of the scene
-  struct House houses[NUM_MAX_HOUSES];
+  // The number of structures in the scene
+  unsigned int num_structures;
+  // The structures of the scene
+  struct Structure structures[NUM_MAX_BUILDINGS + NUM_MAX_HOUSES];
+  
   // The number of antennas in the scene
   unsigned int num_antennas;
   // The antennas of the scene
@@ -124,42 +114,11 @@ bool validate_structures_overlaps(const struct Scene* scene, struct ValidationEr
 bool validate_antennas(const struct Scene* scene, struct ValidationError* error);
 
 /**
- * Indicates if two buildings are overlapping
- *
- * Two building are overlapping if their intersection has a strictly positive
- * area.
- *
- * @param building1  The first building
- * @param building2  The second building
- */
-bool are_building_overlapping(const struct Building* building1,
-                             const struct Building* building2);
-
-/**
- * Indicates if two houses are overlapping
- *
- * @param house1  The first house
- * @param house2  The second house
- * @return        true if and only if they overlap
- */
-bool are_houses_overlapping(const struct House* house1,
-  const struct House* house2);
-
-/**
- * Indicates if a building and a house are overlapping
- *
- * @param building  The building
- * @param house     The house
- * @return          true if and only if they overlap
- */
-bool are_building_house_overlapping(const struct Building* building,
-  const struct House* house);
-
-/**
 * Indicates if two antennas have the same position
 *
 * @param antenna1  The first antenna
 * @param antenna2  The second antenna
+* @return         true if and only if they have the same position
 */
 bool have_antennas_same_position(const struct Antenna* antenna1,
                                 const struct Antenna* antenna2);
@@ -183,20 +142,6 @@ bool scene_is_empty(const struct Scene* scene);
 void print_scene_summary(const struct Scene* scene);
 
 /**
- * Prints the building of the scene to stdout
- *
- * @param scene  The scene whose buildings are printed
- */
-void print_scene_buildings(const struct Scene* scene);
-
-/**
- * Prints the houses of the scene to stdout
- *
- * @param scene  The scene whose houses are printed
- */
-void print_scene_houses(const struct Scene* scene);
-
-/**
  * Prints the antenna of the scene to stdout
  *
  * @param scene  The scene whose antennas are printed
@@ -214,27 +159,14 @@ void print_scene_bounding_box(const struct Scene* scene);
 // ---------
 
 /**
- * Adds a building to a scene
- *
- * @param scene     The scene to which the building is added
- * @param building  The building to add
- */
-void add_building(struct Scene* scene, const struct Building* building);
-
-/**
- * Adds a house to a scene
- *
- * @param scene  The scene to which the house is added
- * @param house  The house to add
- */
-void add_house(struct Scene* scene, const struct House* house);
-
-/**
  * Adds an antenna to a scene
  *
  * @param scene    The scene to which the antenna is added
  * @param antenna  The antenna to add
  */
 void add_antenna(struct Scene* scene, const struct Antenna* antenna);
+
+// Helper functions
+// ---------------
 
 #endif
